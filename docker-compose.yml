@@ -1,0 +1,34 @@
+version: '3'
+services:
+  db:
+    container_name: postgres-14
+    image: postgres:14
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: obstare
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: obstare
+    volumes:
+      - ./scripts:/docker-entrypoint-initdb.d
+    networks:
+      - newb-obstare
+
+  app:
+    container_name: api
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/obstare
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: obstare
+    networks:
+      - newb-obstare
+
+networks:
+  newb-obstare:
+    driver: bridge
+
